@@ -31,6 +31,7 @@ const postSchema = new mongoose.Schema(
     contributors: [contributorSchema], 
     issues: [issueSchema],
     languages: { type:Map ,of :Number},
+    postSaved :{type: Number, default: 0},
     user:{
        type: mongoose.Schema.Types.ObjectId,
        ref: "User"

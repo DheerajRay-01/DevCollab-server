@@ -1,3 +1,4 @@
+import dotenv from 'dotenv'
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
@@ -7,10 +8,11 @@ import userRoute from './router/user.routes.js'
 import repoRoute from './router/repo.routes.js'
 import postRoute from './router/post.routes.js'
 import { authMiddleware } from './middlewares/auth.middleware.js'
+dotenv.config()
 const app = express()
 app.use(cors({
-    origin:  process.env.CORS_ORIGIN,
     // origin:  "http://localhost:5173",
+    origin:  process.env.CORS_ORIGIN,
     credentials:true
 }))
 app.use(express.json({limit:"16kb"}))

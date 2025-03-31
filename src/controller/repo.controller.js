@@ -150,7 +150,7 @@ const getMyPosts = asyncHandler(async(req,res)=>{
 const getAllPost = asyncHandler(async (req, res) => {
     try {
         const allPosts = await Post.find({isPublic:true})
-            .select("name login avatar_url ownerProfile repoName description languages issuesCount contributorCount url issues_url");
+            .select("name login avatar_url ownerProfile repoName description languages issuesCount contributorCount url issues_url postSaved");
 
         console.log(`Fetched ${allPosts.length} posts`);
 
