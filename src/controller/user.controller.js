@@ -10,13 +10,18 @@ import {
   verifyRefreshToken,
 } from "../utils/JWT/jwtTokens.js";
 
+// const options = {
+//   httpOnly: true,
+//   sameSite: "Strict",
+//   secure: false,  
+// };
+
 const options = {
-  httpOnly: true,
-  sameSite: "None",
-  secure: process.env.NODE_ENV === "production", 
-  // secure: false, // Manually set to false for localhost
-  // sameSite: "Strict",
+  httpOnly: true, 
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", 
 };
+
 
 const accessTokenOptions = { ...options, maxAge: 15 * 60 * 1000 }; // 15 min
 const refreshTokenOptions = { ...options, maxAge: 30 * 24 * 60 * 60 * 1000 }; // 30 days
@@ -29,8 +34,6 @@ const signIn = asyncHandler(async (req, res, next) => {
     throw new ApiError(401, "request Code token is missing");
   }
 
-  
-  
   const responseData = await axios.post(
     `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}&code=${requestToken}`,
     {

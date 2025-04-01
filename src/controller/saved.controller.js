@@ -16,7 +16,7 @@ const savePost = asyncHandler(async (req, res) => {
       console.log(postName);
       
   
-      if(!user || ! post){
+      if(!user || !post){
         throw new ApiError(400,"post /user not found")
       }
 

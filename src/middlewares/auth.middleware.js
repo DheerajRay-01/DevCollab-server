@@ -5,19 +5,20 @@ import { verifyAccessToken } from "../utils/JWT/jwtTokens.js";
 
 
 const authMiddleware = asyncHandler(async(req,_,next)=>{
-
+    
     // console.log("current user");
     const token = req.cookies.accessToken || 
-              (req.headers.Authorization?.startsWith("Bearer ") 
-                ? req.headers.Authorization.split(" ")[1] 
-                : null);
-
+    (req.headers.Authorization?.startsWith("Bearer ") 
+    ? req.headers.Authorization.split(" ")[1] 
+    : null);
+    
     if(!token){
         throw new ApiError(401,"Token Not Found , Unauthaurised")
     }
 
     
     const fetchedUser = verifyAccessToken(token)
+    
     
     if(!fetchedUser ){
         throw new ApiError(401,"Token verification error")
