@@ -12,8 +12,10 @@ import {
 
 const options = {
   httpOnly: true,
-  secure: false, // Manually set to false for localhost
-  sameSite: "Strict",
+  sameSite: "None",
+  secure: process.env.NODE_ENV === "production", 
+  // secure: false, // Manually set to false for localhost
+  // sameSite: "Strict",
 };
 
 const accessTokenOptions = { ...options, maxAge: 15 * 60 * 1000 }; // 15 min
@@ -59,8 +61,6 @@ const signIn = asyncHandler(async (req, res, next) => {
   let existingUser = await User.findOne({
     $or: [{ githubId: user.id }, { login: user.login }],
   });
-  
-  // console.log("existing", existingUser);
   
   // console.log("testing :",user);
   

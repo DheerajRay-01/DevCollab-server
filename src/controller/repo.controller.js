@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { fetchCompleteRepoData, fetchSearchedRepoData } from "../utils/gitHubApiCalls/githubRepoData.js";
+import {Saved} from '../models/saved.model.js'
 
 const getRepoData = asyncHandler(async (req, res) => {
     const { repo } = req.query; // Get repo name from query params
@@ -170,12 +171,16 @@ const deletePost = asyncHandler(async (req, res) => {
     }
 
     try {
-        const deletedPost = await Post.findByIdAndDelete(post_id);
-
+        // const deletedPost = await Post.findByIdAndDelete(post_id);
+        const deletedPost = await Promise.all([
+            Post.findByIdAndDelete(post_id),
+            Saved.findOneAndDelete({post:post_id})
+        ])
+        // console.log(deletedPost);
+        
         if (!deletedPost) {
             throw new ApiError(404, "Post not found or already deleted");
-        }
-
+        }   
         // console.log(`Post deleted: ${deletedPost._id}`);
 
         return res.status(200).json(new ApiResponse(200, deletedPost, "Post deleted successfully"));
@@ -194,6 +199,7 @@ const changeVisibility = asyncHandler(async (req, res) => {
     }
 
     try {
+
         const findPost = await Post.findById(post_id).select("isPublic");
 
         if (!findPost) {

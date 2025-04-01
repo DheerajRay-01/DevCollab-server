@@ -20,12 +20,10 @@ const savePost = asyncHandler(async (req, res) => {
         throw new ApiError(400,"post /user not found")
       }
 
-      const postData =await Post.findById(post)
-      // console.log(postData);
-      
-
-      // Check if post is already saved by the user
-      const existingSave = await Saved.findOne({  user ,post });
+      const [postData , existingSave] = await Promise.all([
+        Post.findById(post),
+        Saved.findOne({  user ,post })
+      ])
   
       let changeSaved;
       let message;
