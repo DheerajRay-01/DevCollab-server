@@ -10,12 +10,6 @@ import {
   verifyRefreshToken,
 } from "../utils/JWT/jwtTokens.js";
 
-// const options = {
-//   httpOnly: true,
-//   sameSite: "Strict",
-//   secure: false,  
-// };
-
 const options = {
   httpOnly: true, 
   secure: process.env.NODE_ENV === "production",
