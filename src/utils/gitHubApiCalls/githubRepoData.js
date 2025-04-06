@@ -75,7 +75,7 @@ export const fetchCompleteRepoData = async (login, access_token, repo) => {
           starCount: repositoryData.stargazers_count || 0,
           contributorCount: contributorsResponse?.data?.length || 0,
           issuesCount: issuesResponse?.data?.length || 0,
-          description: repositoryData?.description || "No description available",
+          description: repositoryData?.description || "",
           license: repositoryData?.license?.name || "No License",
           issues_url: repositoryData?.full_name
             ? `https://github.com/${repositoryData?.full_name}/issues`

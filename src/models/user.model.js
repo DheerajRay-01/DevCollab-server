@@ -2,38 +2,32 @@ import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema(
   {
-    githubId: { type: String, required: true, unique: true }, // GitHub ID (Unique)
+    // GitHub Authentication & Profile Data
+    githubId: { type: String, required: true, unique: true }, // Unique GitHub ID
     login: { type: String, required: true, unique: true }, // GitHub username
     name: { type: String }, // Full name from GitHub
-    avatar_url: { type: String }, // Profile picture
+    avatar_url: { type: String }, // Profile picture URL
     bio: { type: String }, // GitHub bio
-    // location: { type: String }, // GitHub location
     html_url: { type: String }, // GitHub profile link
-    email: { type: String },
-    twitter_username: { type: String },
+    email: { type: String }, // User email (if available)
+    twitter_username: { type: String }, // Twitter handle (if linked)
 
-
-    // GitHub Stats
-    public_repos: { type: Number, default: 0 },
-    followers: { type: Number, default: 0 },
-    following: { type: Number, default: 0 },
-    total_contributions: { type: Number, default: 0 }, // Fetched from GitHub events API
-    starred_repos: { type: Number, default: 0 }, // Count of starred repositories
-    top_languages: { type: [String], default: [] }, // Array of top languages used
-    // open_issues: { type: Number, default: 0 }, // Total open issues created
+    // GitHub Statistics
+    public_repos: { type: Number, default: 0 }, // Total public repositories
+    followers: { type: Number, default: 0 }, // Number of followers
+    following: { type: Number, default: 0 }, // Number of users followed
+    total_contributions: { type: Number, default: 0 }, // Contributions (from GitHub API)
+    starred_repos: { type: Number, default: 0 }, // Total starred repositories
+    top_languages: { type: [String], default: [] }, // List of top used programming languages
 
     // DevCollab Platform Data
-    posts_created: { type: Number, default: 0 }, // Number of posts created
-    // contributions: { type: Number, default: 0 }, // Contributions on DevCollab platform
+    posts_created: { type: Number, default: 0 }, // Count of posts created on the platform
 
-
-    // OAuth Tokens 
-    access_token: { type: String, select: false }, // GitHub Access Token
-    refreshToken: { type: String, select: false }, // JWT Refresh Token 
+    // Authentication Tokens (Hidden in Queries)
+    access_token: { type: String, select: false }, // GitHub OAuth access token
+    refreshToken: { type: String, select: false }, // JWT refresh token
   },
-  { timestamps: true }
+  { timestamps: true } // Adds `createdAt` and `updatedAt` timestamps
 );
-
-
 
 export const User = mongoose.model("User", UserSchema);

@@ -26,6 +26,7 @@ const options = {
 const accessTokenOptions = { ...options, maxAge: 15 * 60 * 1000 }; // 15 min
 const refreshTokenOptions = { ...options, maxAge: 30 * 24 * 60 * 60 * 1000 }; // 30 days
 
+
 const signIn = asyncHandler(async (req, res, next) => {
   const requestToken = req.query.code;
 
@@ -118,40 +119,6 @@ const signIn = asyncHandler(async (req, res, next) => {
 });
 
 
-const getCurrentUser = asyncHandler(async (req, res) => {
-  const user = req.user;
-  if (!user) {
-    throw new ApiError(400, "Current User Not Found");
-  }
-  return res
-    .status(200)
-    .json(new ApiResponse(200, { user }, "Current User Found"));
-});
-
-
-const userLogout = asyncHandler(async (req, res) => {
-  const userId = req.user?._id;
-  if (!userId) {
-    throw new ApiError(400, " User Not Found");
-  }
-  const logOutUser = await User.findByIdAndUpdate(
-    userId,
-    { refreshToken: "", access_token: "" },
-    { new: true }
-  );
-
-  if (!logOutUser) {
-    throw new ApiError(400, "error in Updating user while LogOut");
-  }
-
-  return res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User LogOut Successfully"));
-});
-
-
 const refreshAccessToken = asyncHandler(async (req, res) => {
 
   const token = req.cookies.refreshToken;
@@ -195,6 +162,39 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 
+const getCurrentUser = asyncHandler(async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    throw new ApiError(400, "Current User Not Found");
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { user }, "Current User Found"));
+});
+
+
+const userLogout = asyncHandler(async (req, res) => {
+  const userId = req.user?._id;
+  if (!userId) {
+    throw new ApiError(400, " User Not Found");
+  }
+  const logOutUser = await User.findByIdAndUpdate(
+    userId,
+    { refreshToken: "", access_token: "" },
+    { new: true }
+  );
+
+  if (!logOutUser) {
+    throw new ApiError(400, "error in Updating user while LogOut");
+  }
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User LogOut Successfully"));
+});
+
 
 const getAllRepo = asyncHandler(async (req, res) => {
   try {
@@ -228,4 +228,28 @@ const getAllRepo = asyncHandler(async (req, res) => {
 });
 
 
-export { signIn, getCurrentUser, userLogout, refreshAccessToken ,getAllRepo};
+const getUserProfile = asyncHandler(async (req ,res)=>{
+  const userId = req.query.userId
+  if(!userId){
+    throw new ApiError(401, "User id not found");
+  }
+      try {
+        const user = await User.findOne({login:userId})
+        if(!user){
+          throw new ApiError(401, "User not fetched from DB");
+        }
+        res.status(200).json(new ApiResponse(200,user,"repo fetched"));
+           
+      } catch (error) { 
+        console.error("Error in getUserProfile:", error);
+        res.status(error.statusCode || 500).json({ 
+            success: false, 
+            message: error.message || "Internal Server Error" 
+        });
+      }
+
+  console.log(userId);
+  
+})
+
+export { signIn, getCurrentUser, userLogout, refreshAccessToken ,getAllRepo, getUserProfile};

@@ -98,9 +98,13 @@ const uploadingPost = asyncHandler(async (req, res) => {
     }
 
     try {
-        const uploadPost = await Post.create({ ...data, user:user._id,name:user.name, avatar_url:user.avatar_url});
+        // const uploadPost = await Post.create({ ...data, user:user._id,name:user.name, avatar_url:user.avatar_url});
+        const [uploadPost,updatedPostCount] = await Promise.all([
+            Post.create({ ...data, user:user._id,name:user.name, avatar_url:user.avatar_url}),
+            User.findByIdAndUpdate(user._id,{ $inc: { posts_created: 1 } },{ new: true }),
+        ])
 
-        if (!uploadPost) {
+        if (!uploadPost || !updatedPostCount) {
             throw new ApiError(500, "Failed to Upload Post");
         }
 
@@ -149,9 +153,19 @@ const getMyPosts = asyncHandler(async(req,res)=>{
 })
 
 const getAllPost = asyncHandler(async (req, res) => {
+    const page = req.query.p
+    const limit = req.query.l
+    const skip = page * limit
+    console.log("page",page);   
+    console.log("limit",limit);   
+    
+    
     try {
         const allPosts = await Post.find({isPublic:true})
-            .select("name login avatar_url ownerProfile repoName description languages issuesCount contributorCount url issues_url postSaved");
+            .select("name login avatar_url ownerProfile repoName description languages issuesCount contributorCount url issues_url postSaved createdAt")
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 });
 
         console.log(`Fetched ${allPosts.length} posts`);
 
@@ -165,6 +179,7 @@ const getAllPost = asyncHandler(async (req, res) => {
 
 const deletePost = asyncHandler(async (req, res) => {
     const post_id = req.params.post_id || req.query.post_id;
+    const user = req.user._id
 
     if (!post_id) {
         throw new ApiError(400, "Post ID is required");
@@ -172,10 +187,15 @@ const deletePost = asyncHandler(async (req, res) => {
 
     try {
         // const deletedPost = await Post.findByIdAndDelete(post_id);
-        const deletedPost = await Promise.all([
+        const [deletedPost, deletedSavedPostData, userData] = await Promise.all([
             Post.findByIdAndDelete(post_id),
-            Saved.findOneAndDelete({post:post_id})
-        ])
+            Saved.findOneAndDelete({ post: post_id }),
+            User.findById(user)
+          ]);
+          
+          userData.posts_created = Math.max(0, userData.posts_created - 1);
+          await userData.save();
+          
         // console.log(deletedPost);
         
         if (!deletedPost) {
@@ -190,6 +210,36 @@ const deletePost = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Internal server error while deleting post");
     }
 });
+
+const deleteAllPost = asyncHandler(async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const login = req.user.login;
+        console.log(userId,login);
+        
+
+        const [deletedPosts, deletedSaved , updateUserPostCount] = await Promise.all([
+            Post.deleteMany({ user: userId }),
+            Saved.deleteMany({ login }),
+            User.findByIdAndUpdate(userId,{posts_created:0},{new:true})
+        ]);
+
+        if (deletedPosts.deletedCount === 0 && deletedSaved.deletedCount === 0) {
+            throw new ApiError(404, "No posts or saved items found to delete");
+        }
+
+        return res.status(200).json(
+            new ApiResponse(200, { deletedPosts, deletedSaved ,updateUserPostCount}, "All posts and saved items deleted successfully")
+        );
+
+    } catch (error) {
+        console.error("Error deleting posts:", error);
+        throw new ApiError(500, "Internal server error while deleting posts");  
+    }
+});
+
+
+
 
 const changeVisibility = asyncHandler(async (req, res) => {
     const post_id = req.params.post_id || req.query.post_id;
@@ -236,5 +286,6 @@ export {
   getMyPosts,
   getAllPost,
   deletePost,
+  deleteAllPost,
   changeVisibility,
 };

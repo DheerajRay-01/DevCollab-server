@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { changeVisibility, deletePost, getAllPost, getPostById } from "../controller/repo.controller.js";
+import { changeVisibility, deleteAllPost, deletePost, getAllPost, getPostById } from "../controller/repo.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { getAllSavedPost, isSaved, savePost } from "../controller/saved.controller.js";
 
@@ -18,6 +18,8 @@ router.route("/save").post(authMiddleware,savePost);
 router.route("/is-saved").post(authMiddleware,isSaved);
 
 router.route("/delete/id/:post_id").delete(authMiddleware,deletePost);
+
+router.route("/delete-all").delete(authMiddleware,deleteAllPost);
 
 
 export default router
