@@ -115,7 +115,7 @@ const signIn = asyncHandler(async (req, res, next) => {
     .status(200)
     .cookie("accessToken", JWT_accessToken, accessTokenOptions)
     .cookie("refreshToken", JWT_refreshToken, refreshTokenOptions)
-    .redirect("http://localhost:5173/");
+    .redirect(process.env.CORS_ORIGIN);
 });
 
 
