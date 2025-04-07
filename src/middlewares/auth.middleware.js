@@ -6,7 +6,6 @@ import { verifyAccessToken } from "../utils/JWT/jwtTokens.js";
 
 const authMiddleware = asyncHandler(async(req,_,next)=>{
     
-    // console.log("current user");
     const token = req.cookies.accessToken || 
     (req.headers.Authorization?.startsWith("Bearer ") 
     ? req.headers.Authorization.split(" ")[1] 

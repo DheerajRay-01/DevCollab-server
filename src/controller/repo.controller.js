@@ -157,8 +157,7 @@ const getAllPost = asyncHandler(async (req, res) => {
     const limit = req.query.l
     const skip = page * limit
     console.log("page",page);   
-    console.log("limit",limit);   
-    
+    console.log("limit",limit);       
     
     try {
         const allPosts = await Post.find({isPublic:true})

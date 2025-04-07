@@ -10,18 +10,17 @@ import {
   verifyRefreshToken,
 } from "../utils/JWT/jwtTokens.js";
 
-const options = {
-  httpOnly: true, 
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", 
-};
-
-
-const accessTokenOptions = { ...options, maxAge: 15 * 60 * 1000 }; // 15 min
-const refreshTokenOptions = { ...options, maxAge: 30 * 24 * 60 * 60 * 1000 }; // 30 days
-
 
 const signIn = asyncHandler(async (req, res, next) => {
+  const options = {
+    httpOnly: true, 
+    secure: process.env.NODE_ENV == "production",
+    sameSite: process.env.NODE_ENV == "production" ? "None" : "Lax", 
+  };  
+
+  const accessTokenOptions = { ...options, maxAge: 15 * 60 * 1000 }; // 15 min
+  const refreshTokenOptions = { ...options, maxAge: 30 * 24 * 60 * 60 * 1000 }; // 30 days
+   
   const requestToken = req.query.code;
 
   if (!requestToken) {
@@ -105,6 +104,10 @@ const signIn = asyncHandler(async (req, res, next) => {
     throw new ApiError(500, "Error retrieving signed-in user data");
   }
 
+  console.log(options);
+  console.log(process.env.NODE_ENV,typeof(process.env.NODE_ENV));
+  
+
   return res
     .status(200)
     .cookie("accessToken", JWT_accessToken, accessTokenOptions)
@@ -114,6 +117,14 @@ const signIn = asyncHandler(async (req, res, next) => {
 
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
+  const options = {
+    httpOnly: true, 
+    secure: process.env.NODE_ENV == "production",
+    sameSite: process.env.NODE_ENV == "production" ? "None" : "Lax", 
+  };  
+
+  const accessTokenOptions = { ...options, maxAge: 15 * 60 * 1000 }; // 15 min
+  const refreshTokenOptions = { ...options, maxAge: 30 * 24 * 60 * 60 * 1000 }; // 30 days
 
   const token = req.cookies.refreshToken;
 
@@ -121,8 +132,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   try {
     verifyToken = verifyRefreshToken(token);
   } catch (error) {
-
-
     return res
       .status(401)
       .clearCookie("accessToken", { ...options, expires: new Date(0) })
@@ -134,9 +143,10 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     .select("refreshToken")
     .lean();
 
-  if (!storedToken) {
+  if (!storedToken.refreshToken) {
     return res
       .status(400)
+      .clearCookie("refreshToken", { ...options, expires: new Date(0) })
       .json(new ApiResponse(400, {}, "Refresh Token not found in database"));
   }
 
@@ -168,6 +178,11 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
 
 const userLogout = asyncHandler(async (req, res) => {
+  const options = {
+    httpOnly: true, 
+    secure: process.env.NODE_ENV == "production",
+    sameSite: process.env.NODE_ENV == "production" ? "None" : "Lax", 
+  };  
   const userId = req.user?._id;
   if (!userId) {
     throw new ApiError(400, " User Not Found");
