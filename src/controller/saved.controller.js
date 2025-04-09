@@ -80,7 +80,7 @@ const getAllSavedPost = asyncHandler(async (req, res) => {
     }
 
     // const allSaved = await Saved.find({ user: userId }).lean();
-    const allSaved = await Saved.find({ user: userId })
+    const allSaved = await Saved.find({ user: userId }).lean()
 
     if (allSaved.length < 0) {
         throw new ApiError(404, "No saved posts found");
