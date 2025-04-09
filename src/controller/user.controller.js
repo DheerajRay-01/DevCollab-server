@@ -259,6 +259,6 @@ const getUserProfile = asyncHandler(async (req ,res)=>{
 
   console.log(userId);
   
-})
+}) 
 
 export { signIn, getCurrentUser, userLogout, refreshAccessToken ,getAllRepo, getUserProfile};

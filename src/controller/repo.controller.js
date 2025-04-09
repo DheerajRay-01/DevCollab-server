@@ -144,7 +144,7 @@ const getMyPosts = asyncHandler(async(req,res)=>{
         throw new ApiError(401, "Unauthorized: User not found");
     }
 
-    const posts = await Post.find({user}).select("repoName description contributorCount issuesCount languages isPublic")
+    const posts = await Post.find({user}).select("repoName description contributorCount issuesCount languages isPublic").lean()
     if(!posts){
         throw new ApiError(401, "error in fetch posts");
     }
@@ -164,7 +164,8 @@ const getAllPost = asyncHandler(async (req, res) => {
             .select("name login avatar_url ownerProfile repoName description languages issuesCount contributorCount url issues_url postSaved createdAt")
             .skip(skip)
             .limit(limit)
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .lean();
 
         console.log(`Fetched ${allPosts.length} posts`);
 
