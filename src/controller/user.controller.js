@@ -41,9 +41,6 @@ const signIn = asyncHandler(async (req, res, next) => {
   
   const params = new URLSearchParams(responseData.data);
   const access_token = params.get("access_token");
-  // console.log(access_token);
-  
-  
   const user = await getGitHubUserData(access_token);
   if (!user) {
     throw new ApiError(400, "Error fetching GitHub user data");

@@ -177,6 +177,32 @@ const getAllPost = asyncHandler(async (req, res) => {
     }
 });
 
+
+const search = asyncHandler(async (req, res) => {
+    const searchTerm = req.query.search?.trim() || "";
+
+    try {
+        const allPosts = await Post.find(
+            { isPublic: true, $text: { $search: searchTerm } }
+        )
+            .select("name login avatar_url ownerProfile repoName description languages issuesCount contributorCount url issues_url postSaved createdAt")
+            .sort({ createdAt: -1 })
+            .lean();
+
+        // Check if no posts are found
+        if (allPosts.length === 0) {
+            return res.status(404).json(new ApiResponse(404, [], "No posts found for the given search term"));
+        }
+
+        return res.status(200).json(new ApiResponse(200, allPosts, "Fetched successfully"));
+    } catch (error) {
+        console.error("Error fetching posts:", error.message);
+        return res.status(500).json(new ApiResponse(500, [], "Error fetching posts"));
+    }
+});
+
+
+
 const deletePost = asyncHandler(async (req, res) => {
     const post_id = req.params.post_id || req.query.post_id;
     const user = req.user._id
@@ -288,4 +314,5 @@ export {
   deletePost,
   deleteAllPost,
   changeVisibility,
+  search
 };

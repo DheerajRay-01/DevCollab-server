@@ -47,6 +47,7 @@ export const fetchCompleteRepoData = async (login, access_token, repo) => {
     const repositoryData = repoResponse.data;
 
     const languages = languagesResponse?.data || {};
+    const tags = Object.keys(languages).join(" ");
     const contributors =
       contributorsResponse?.data?.length > 0
         ? contributorsResponse.data
@@ -92,6 +93,7 @@ export const fetchCompleteRepoData = async (login, access_token, repo) => {
                 day: "numeric",
               })
             : "N/A",
+            tags : tags
         };
         
 
