@@ -42,5 +42,8 @@ app.get("/", (req, res) => {
   });
 });
 
+app.head("/", (req, res) => {
+  res.status(200).end();
+});
 
 export {app}
