@@ -28,7 +28,12 @@ app.use('/post',postRoute)
 
 
 app.get("/", (req, res) => {
-  res.send("DevCollab backend is running!");
-})
+  res.status(200).json({
+    success: true,
+    message: "✅ DevCollab backend is running!",
+    timestamp: new Date(),
+  });
+});
+
 
 export {app}
