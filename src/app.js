@@ -26,4 +26,9 @@ app.use('/repo',authMiddleware,repoRoute)
 app.use('/post',postRoute)
 // app.use('/post',postRoute)
 
+
+app.get("/", (req, res) => {
+  res.send("DevCollab backend is running!");
+})
+
 export {app}
