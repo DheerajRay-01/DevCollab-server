@@ -28,10 +28,17 @@ app.use('/post',postRoute)
 
 
 app.get("/", (req, res) => {
+  const now = new Date();
+  const formattedTime = now.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    dateStyle: "full",
+    timeStyle: "long",
+  });
+
   res.status(200).json({
     success: true,
     message: "✅ DevCollab backend is running!",
-    timestamp: new Date(),
+    timestamp: formattedTime,
   });
 });
 
