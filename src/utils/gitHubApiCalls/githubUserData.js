@@ -28,7 +28,7 @@ const getGitHubUserData = async (access_token) => {
         // }));
         
 
-        for (const repo of repoData.data) {
+        for (const repo of repoData.data || []) {
             if (repo.language) {
                 languagesUsed.add(repo.language);
             }
@@ -41,7 +41,7 @@ const getGitHubUserData = async (access_token) => {
 
         for (const event of eventsData.data) {
             if (event.type === "PushEvent") {
-                pushEvents += event.payload.commits.length; // Count commits in push events
+                pushEvents += event.payload?.commits?.length || 0; // Count commits in push events
             }
         }
 
@@ -54,7 +54,7 @@ const getGitHubUserData = async (access_token) => {
             ...response.data,
             top_languages: Array.from(languagesUsed), // Convert Set to Array
             total_contributions: pushEvents,
-            starred_repos: starredData.data.length // Total starred repositories
+            starred_repos: starredData.data?.length || 0 // Total starred repositories
            
         };
     } catch (error) {
